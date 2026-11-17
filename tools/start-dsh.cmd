@@ -1,4 +1,4 @@
 @echo off
-rem 双击启动 DSH Web UI（调用同目录下的 start-dsh.ps1）
+rem Double-click to start DSH Web UI (runs start-dsh.ps1 in this folder)
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0start-dsh.ps1"
 pause
