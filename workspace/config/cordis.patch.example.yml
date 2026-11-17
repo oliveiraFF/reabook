@@ -1,0 +1,81 @@
+# 合并进本机 DSH profile（web）的 cordis.patch.yml。这是示例，不是最终文件。
+# 待核实：cordis.patch.yml 实际路径；成员行 tool_policy 写法（见 AgentTeams docs/usage.md）；
+#         DSH 内置工具的确切名字（read / glob / grep / web_search）；dsh-feishu、dsh-cron 的行 id。
+# 凭据（模型 API Key、飞书 App Secret）不写在这里。
+# 当前在本机运行（PRD v1.7）：<WORKSPACE> 即 E:/reabook/workspace。Mac mini 常驻部署（PRD 10.1）之后另议，届时替换为该机上的绝对路径。
+# 每个成员开工先读 modules/<模块>/persona.md、memory.md、最近 5 行 history.md。
+# 交叉验收（PRD FR-13）：执行模块统一用「执行模型」；captain 会话与 advocate 用「验收模型」，两者必须不同厂商。
+#   下面 model 的值是占位，填本机 DSH 模型目录里的实际模型 id（待确认：执行 DeepSeek，验收 Kimi）。
+#   captain 的验收模型 = 打开团队时 DSH 会话所选的模型。
+
+- id: agent-teams
+  config:
+    memberModel: <执行模型id，如 DeepSeek>
+    toolPolicies:
+      read-and-search:
+        allow: [read, glob, grep, web_search]
+    profiles:
+      video:
+        description: 场景模板 S1 视频创作：idea → script → edit，asset 并行
+        taskPlanning: seed
+        protocol: >
+          先读 <WORKSPACE>/modules/captain/persona.md 并严格遵守。
+          讨论阶段只分析不改文件；执行阶段先说明模块组合、改什么、怎么验证，老板确认后再派活。
+          默认唯一审核节点在成品前；永不自动通过。五条红线任何阶段都单独确认。
+          输出开头标注 6 种状态之一。执行模块不自评，由 captain 验收并写回记忆。
+        members:
+          - name: idea
+            role: 创意方案。开工前先读 <WORKSPACE>/modules/idea/ 下 persona.md、memory.md、history.md。
+          - name: script
+            role: 脚本与分镜。开工前先读 <WORKSPACE>/modules/script/ 下三份文件。
+          - name: asset
+            role: 素材索引，只读原始素材。开工前先读 <WORKSPACE>/modules/asset/ 下三份文件。
+          - name: edit
+            role: 剪辑时间线包，素材只复制不修改。开工前先读 <WORKSPACE>/modules/edit/ 下三份文件。
+        tasks:
+          - id: idea
+            subject: 创意方案第一步：3 个方向 + 推荐 + 待确认项，不展开（projects/<任务ID>/idea.md）
+            assignee: idea
+          - id: assets
+            subject: 素材清单（projects/<任务ID>/assets.md）
+            assignee: asset
+          # script、edit 不预设（2026-11-15，T8 复盘）：老板选定方向后，captain 先建「方向 X 展开」（idea），
+          # 再建只依赖它的 script 任务，最后建依赖 script 与 assets 的 edit 任务。选方向前不存在可被自动领取的下游任务。
+
+      single:
+        description: 单模块直调 / 平面设计 / 定时选题，由 captain 按老板指定只派需要的模块
+        taskPlanning: captain
+        protocol: >
+          先读 <WORKSPACE>/modules/captain/persona.md 并严格遵守。
+          老板点名哪个模块就只调哪个，不得擅自加模块。
+        members:
+          - name: idea
+            role: 创意方案。开工前先读 <WORKSPACE>/modules/idea/ 下三份文件。
+          - name: script
+            role: 脚本与分镜。开工前先读 <WORKSPACE>/modules/script/ 下三份文件。
+          - name: design
+            role: 平面设计，只用风格投喂范围。开工前先读 <WORKSPACE>/modules/design/ 下三份文件。
+          - name: asset
+            role: 素材索引。开工前先读 <WORKSPACE>/modules/asset/ 下三份文件。
+          - name: advocate
+            role: 反调官，只读，重点攻击方案可行性与商业定价。开工前先读 <WORKSPACE>/modules/advocate/ 下三份文件。
+            model: <验收模型id，如 Kimi>
+            tool_policy: read-and-search
+          # 赛博人物（PRD FR-14）：每蒸馏一位博主，按 modules/_赛博人物模板 复制出 modules/persona-<博主ID>/，再加一行成员：
+          # - name: persona-<博主ID>
+          #   role: 赛博<博主名>（AI 模拟），只读。开工前先读 <WORKSPACE>/modules/persona-<博主ID>/ 下三份文件与 <WORKSPACE>/feeds/thinking/<博主ID>.md。
+          #   model: <验收模型id，如 Kimi>   # 做风格评审时须与执行模型不同厂商
+          #   tool_policy: read-and-search
+
+- id: ponytail
+  name: '@dsh-ext/dsh-ponytail'
+  config:
+    defaultMode: full
+
+# 飞书插件行的 id 以安装后实际生成的为准；也可让 /feishu-onboard 代写这一段。
+- id: dsh-feishu
+  config:
+    operators: []          # 填你自己的 open_id；或接入后立刻私聊机器人完成配对
+    backgroundPush: cron   # 定时任务和子代理完成时推送
+
+# 定时任务（@aiwayds/dsh-cron）按 config/triggers.md 创建，创建方式以插件 README 为准。

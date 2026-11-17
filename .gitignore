@@ -1,0 +1,5 @@
+# AgentTeams runtime state (team.json, inbox) — local only
+workspace/.agent-teams/
+node_modules/
+~$*
+*.tmp

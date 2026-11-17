@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}
+body{margin:0;background:#fff;font-family:"Microsoft YaHei",sans-serif;width:1360px;padding:40px 0 30px}
+.row{display:flex;align-items:center;margin-left:280px}
+.box{width:640px;height:96px;border:2px solid;border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.side{width:300px}
+.t{font-size:27px;font-weight:700;line-height:1.35}
+.s{font-size:23px;line-height:1.4}
+.you{background:#F2EFE9;border-color:#6B6B6B;color:#333}.you .s{color:#555}
+.cap{background:#FBEEE8;border-color:#A0442A;color:#7A2E16}.cap .s{color:#A0442A}
+.exe{background:#EEEDFD;border-color:#5B4FC9;color:#2F2A80}.exe .s{color:#5B4FC9}
+.rev{background:#FFF5DB;border-color:#B07A00;color:#6B4A00}.rev .s{color:#8A5F00}
+.file{background:#E3F4EE;border-color:#1E7A5C;color:#0E5540}.file .s{color:#1E7A5C}
+.h{width:80px;height:2px;background:#6B6B6B;position:relative}
+.h:after{content:"";position:absolute;right:-1px;top:-6px;border:7px solid transparent;border-left:10px solid #6B6B6B;border-right:0}
+.v{width:640px;height:52px;margin-left:280px;position:relative}
+.v:before{content:"";position:absolute;left:319px;top:4px;height:40px;width:2px;background:#6B6B6B}
+.v:after{content:"";position:absolute;left:313px;top:40px;border:7px solid transparent;border-top:10px solid #6B6B6B;border-bottom:0}
+.v span{position:absolute;left:336px;top:10px;font-size:22px;color:#555}
+.legend{display:flex;gap:44px;margin:46px 0 0 80px;font-size:23px;color:#333;align-items:center}
+.legend i{display:inline-block;width:24px;height:24px;border:2px solid;border-radius:5px;vertical-align:-4px;margin-right:10px}
+</style></head><body>
+<div class="row"><div class="box you"><div class="t">老板下任务</div><div class="s">【执行】做一条 60 秒视频的方案和脚本</div></div></div>
+<div class="v"></div>
+<div class="row"><div class="box cap"><div class="t">captain 判断阶段</div><div class="s">讨论还是执行？指代不明先问</div></div><div class="h"></div><div class="box you side"><div class="t">讨论</div><div class="s">只分析，不改文件</div></div></div>
+<div class="v"><span>执行</span></div>
+<div class="row"><div class="box cap"><div class="t">给出模块组合，等你确认</div><div class="s">你点「确认并启动团队」；只建 idea 第一步任务</div></div></div>
+<div class="v"></div>
+<div class="row"><div class="box exe"><div class="t">idea 第一步 · DeepSeek</div><div class="s">3 个方向 + 推荐，不展开 → 写 idea.md</div></div></div>
+<div class="v"></div>
+<div class="row"><div class="box you"><div class="t">你选方向 X</div><div class="s">问询卡上点选</div></div></div>
+<div class="v"></div>
+<div class="row"><div class="box cap"><div class="t">captain 新建两个任务</div><div class="s">「方向 X 展开」+ script（只依赖展开任务）</div></div></div>
+<div class="v"></div>
+<div class="row"><div class="box exe"><div class="t">idea 展开方向 X · DeepSeek</div><div class="s">在 idea.md 末尾追加「## 方向 X 展开」</div></div></div>
+<div class="v"></div>
+<div class="row"><div class="box exe"><div class="t">script 出脚本和分镜 · DeepSeek</div><div class="s">展开完成后自动唤醒 → 写 script.md</div></div></div>
+<div class="v"></div>
+<div class="row"><div class="box rev"><div class="t">reviewer 交叉验收 · Kimi</div><div class="s">模型写死在配置里；只读，结论交回 captain</div></div><div class="h"></div><div class="box cap side"><div class="t">不通过</div><div class="s">新建修订任务，第 3 次阻塞</div></div></div>
+<div class="v"><span>通过</span></div>
+<div class="row"><div class="box you"><div class="t">审核卡（唯一阻塞点）</div><div class="s">通过 · 打回 · 改方向；两侧模型取自 team.json</div></div><div class="h"></div><div class="box you side"><div class="t">改方向</div><div class="s">重做 X，保留 Y</div></div></div>
+<div class="v"><span>通过</span></div>
+<div class="row"><div class="box file"><div class="t">复盘 + 写回记忆</div><div class="s">你点「通过」后才写；每个文件写后回读确认</div></div></div>
+<div class="legend"><span><i style="background:#F2EFE9;border-color:#6B6B6B"></i>你</span><span><i style="background:#FBEEE8;border-color:#A0442A"></i>captain · 编排</span><span><i style="background:#FFF5DB;border-color:#B07A00"></i>reviewer · Kimi</span><span><i style="background:#EEEDFD;border-color:#5B4FC9"></i>执行模块 · DeepSeek</span><span><i style="background:#E3F4EE;border-color:#1E7A5C"></i>写入文件</span></div>
+</body></html>
