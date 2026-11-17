@@ -1,81 +1,94 @@
 # 合并进本机 DSH profile（web）的 cordis.patch.yml。这是示例，不是最终文件。
-# 待核实：cordis.patch.yml 实际路径；成员行 tool_policy 写法（见 AgentTeams docs/usage.md）；
-#         DSH 内置工具的确切名字（read / glob / grep / web_search）；dsh-feishu、dsh-cron 的行 id。
-# 凭据（模型 API Key、飞书 App Secret）不写在这里。
-# 当前在本机运行（PRD v1.7）：<WORKSPACE> 即 E:/reabook/workspace。Mac mini 常驻部署（PRD 10.1）之后另议，届时替换为该机上的绝对路径。
-# 每个成员开工先读 modules/<模块>/persona.md、memory.md、最近 5 行 history.md。
-# 交叉验收（PRD FR-13）：执行模块统一用「执行模型」；captain 会话与 advocate 用「验收模型」，两者必须不同厂商。
-#   下面 model 的值是占位，填本机 DSH 模型目录里的实际模型 id（待确认：执行 DeepSeek，验收 Kimi）。
-#   captain 的验收模型 = 打开团队时 DSH 会话所选的模型。
+# 2026-11-16 按实机配置更新（技术实现文档 v1.1 第 3.2 节、PRD v1.8 FR-13）。
+# 实际文件：C:\Users\25370\.dsh\profiles\web\cordis.patch.yml。改之前先备份成 .bak-<日期>-<改动>，改完重跑已通过的测试。
+# 凭据（模型 API Key、飞书 App Secret）不写在这里，由老板在 Web UI 里填。
+#
+# 已核实：
+# - 成员行可用字段（AgentTeams 0.1.29）：name、role、provider、model、reasoning_effort、executionPrompt、fallback、tool_policy；
+# - memberModel 写裸模型 id；同一模型由多个 provider 提供时（deepseek-v4-pro）必须加 memberLlmProvider，否则建团失败；
+# - 交叉验收由 reviewer 成员做，模型写死在成员行里，记录在 team.json；captain 不做验收，也不得自报模型名。
+# 未核实（UNVERIFIED，用之前先查）：
+# - toolPolicies.allow 里模型侧看到的工具名；
+# - Ponytail、dsh-feishu、dsh-cron 安装后实际生成的配置行 id。
 
 - id: agent-teams
   config:
-    memberModel: <执行模型id，如 DeepSeek>
-    toolPolicies:
-      read-and-search:
-        allow: [read, glob, grep, web_search]
+    memberLlmProvider: deepseek-official
+    memberModel: deepseek-v4-pro          # 执行模块统一用 DeepSeek
     profiles:
-      video:
-        description: 场景模板 S1 视频创作：idea → script → edit，asset 并行
+      chain1:   # 视频链路，已在用
+        description: 第一条链路：idea（3 方向）→ 老板选方向 → idea 展开 → script，captain 交叉验收
         taskPlanning: seed
         protocol: >
-          先读 <WORKSPACE>/modules/captain/persona.md 并严格遵守。
-          讨论阶段只分析不改文件；执行阶段先说明模块组合、改什么、怎么验证，老板确认后再派活。
-          默认唯一审核节点在成品前；永不自动通过。五条红线任何阶段都单独确认。
-          输出开头标注 6 种状态之一。执行模块不自评，由 captain 验收并写回记忆。
+          先读 E:/reabook/workspace/modules/captain/persona.md 并严格遵守。
+          讨论阶段只分析不改文件；执行阶段先说明模块组合与验证方式，老板确认后再派活。
+          默认唯一审核节点在成品前；永不自动通过。红线任何阶段都单独确认。输出开头标注 6 种状态之一。
+          执行模块不自评；交叉验收一律派给 reviewer 成员（模型由配置固定为 Kimi），
+          你只汇总结论，终验通过后写回记忆。
         members:
           - name: idea
-            role: 创意方案。开工前先读 <WORKSPACE>/modules/idea/ 下 persona.md、memory.md、history.md。
+            role: 创意方案。开工前先读 E:/reabook/workspace/modules/idea/ 下 persona.md、memory.md、history.md。
           - name: script
-            role: 脚本与分镜。开工前先读 <WORKSPACE>/modules/script/ 下三份文件。
-          - name: asset
-            role: 素材索引，只读原始素材。开工前先读 <WORKSPACE>/modules/asset/ 下三份文件。
-          - name: edit
-            role: 剪辑时间线包，素材只复制不修改。开工前先读 <WORKSPACE>/modules/edit/ 下三份文件。
+            role: 脚本与分镜。开工前先读 E:/reabook/workspace/modules/script/ 下 persona.md、memory.md、history.md。
+          - name: reviewer
+            provider: moonshotai-cn
+            model: kimi-k3.1-pro
+            role: 交叉验收员（只读）。开工前先读 E:/reabook/workspace/modules/reviewer/ 下 persona.md、memory.md、history.md；只审不改、不写文件，结论用团队消息交回 captain。
+          # 以后加 asset、edit（视频链路后半段）：
+          # - name: asset
+          #   role: 素材索引，只读原始素材。开工前先读 E:/reabook/workspace/modules/asset/ 下三份文件。
+          # - name: edit
+          #   role: 剪辑时间线包，素材只复制不修改。开工前先读 E:/reabook/workspace/modules/edit/ 下三份文件。
         tasks:
           - id: idea
             subject: 创意方案第一步：3 个方向 + 推荐 + 待确认项，不展开（projects/<任务ID>/idea.md）
             assignee: idea
-          - id: assets
-            subject: 素材清单（projects/<任务ID>/assets.md）
-            assignee: asset
-          # script、edit 不预设（2026-11-15，T8 复盘）：老板选定方向后，captain 先建「方向 X 展开」（idea），
-          # 再建只依赖它的 script 任务，最后建依赖 script 与 assets 的 edit 任务。选方向前不存在可被自动领取的下游任务。
+          # 不预设 script / edit 任务（T8 复盘）：老板选定方向后，captain 先建「方向 X 展开」（idea），
+          # 再建只依赖它的 script 任务；以后有 edit 时，再建依赖 script 与 asset 的 edit 任务。
+          # 选方向之前不得存在可被自动领取的下游任务。
 
-      single:
-        description: 单模块直调 / 平面设计 / 定时选题，由 captain 按老板指定只派需要的模块
+      single:   # 单模块直调，已在用
+        description: 单模块直调（PRD 5.1）：老板点名哪个模块就只调哪个；由 captain 规划任务
         taskPlanning: captain
         protocol: >
-          先读 <WORKSPACE>/modules/captain/persona.md 并严格遵守。
-          老板点名哪个模块就只调哪个，不得擅自加模块。
+          先读 E:/reabook/workspace/modules/captain/persona.md 并严格遵守。
+          这是单模块直调：老板点名哪个模块就只调哪个，不得擅自加模块；只建一个任务。
+          讨论阶段只分析不改文件；执行阶段先说明模块组合与验证方式，老板确认后再派活。
+          默认唯一审核节点在成品前；永不自动通过。红线任何阶段都单独确认。输出开头标注 6 种状态之一。
+          执行模块不自评；交叉验收一律派给 reviewer 成员（模型由配置固定为 Kimi），
+          你只汇总结论，终验通过后写回记忆。
         members:
           - name: idea
-            role: 创意方案。开工前先读 <WORKSPACE>/modules/idea/ 下三份文件。
-          - name: script
-            role: 脚本与分镜。开工前先读 <WORKSPACE>/modules/script/ 下三份文件。
-          - name: design
-            role: 平面设计，只用风格投喂范围。开工前先读 <WORKSPACE>/modules/design/ 下三份文件。
-          - name: asset
-            role: 素材索引。开工前先读 <WORKSPACE>/modules/asset/ 下三份文件。
-          - name: advocate
-            role: 反调官，只读，重点攻击方案可行性与商业定价。开工前先读 <WORKSPACE>/modules/advocate/ 下三份文件。
-            model: <验收模型id，如 Kimi>
-            tool_policy: read-and-search
-          # 赛博人物（PRD FR-14）：每蒸馏一位博主，按 modules/_赛博人物模板 复制出 modules/persona-<博主ID>/，再加一行成员：
+            role: 创意方案。开工前先读 E:/reabook/workspace/modules/idea/ 下 persona.md、memory.md、history.md。
+          - name: reviewer
+            provider: moonshotai-cn
+            model: kimi-k3.1-pro
+            role: 交叉验收员（只读）。开工前先读 E:/reabook/workspace/modules/reviewer/ 下 persona.md、memory.md、history.md；只审不改、不写文件，结论用团队消息交回 captain。
+          # 以后按需加（都还没启用）：
+          # - name: design
+          #   role: 平面设计，只用风格投喂范围。开工前先读 E:/reabook/workspace/modules/design/ 下三份文件。
+          # - name: advocate
+          #   provider: moonshotai-cn          # 与被审查的执行模型不同厂商
+          #   model: kimi-k3.1-pro
+          #   tool_policy: <只读策略名>          # UNVERIFIED：先核实模型侧工具名，再在 toolPolicies 里定义
+          #   role: 反调官，只读，重点攻击方案可行性与商业定价。开工前先读 E:/reabook/workspace/modules/advocate/ 下三份文件。
+          # 赛博人物（PRD FR-14）：每蒸馏一位博主，按 modules/_赛博人物模板 复制出 modules/persona-<博主ID>/，再加一行：
           # - name: persona-<博主ID>
-          #   role: 赛博<博主名>（AI 模拟），只读。开工前先读 <WORKSPACE>/modules/persona-<博主ID>/ 下三份文件与 <WORKSPACE>/feeds/thinking/<博主ID>.md。
-          #   model: <验收模型id，如 Kimi>   # 做风格评审时须与执行模型不同厂商
-          #   tool_policy: read-and-search
+          #   provider: moonshotai-cn          # 做风格评审时须与执行模型不同厂商
+          #   model: kimi-k3.1-pro
+          #   role: 赛博<博主名>（AI 模拟），只读。开工前先读 E:/reabook/workspace/modules/persona-<博主ID>/ 下三份文件与 E:/reabook/workspace/feeds/thinking/<博主ID>.md。
 
-- id: ponytail
-  name: '@dsh-ext/dsh-ponytail'
-  config:
-    defaultMode: full
-
-# 飞书插件行的 id 以安装后实际生成的为准；也可让 /feishu-onboard 代写这一段。
-- id: dsh-feishu
-  config:
-    operators: []          # 填你自己的 open_id；或接入后立刻私聊机器人完成配对
-    backgroundPush: cron   # 定时任务和子代理完成时推送
-
+# 以下插件都还没装（按 2.3 节顺序一次只装一个）。行 id 以安装后实际生成的为准（UNVERIFIED）。
+#
+# Ponytail（github:Vincent-chk/dsh-ponytail）：
+# - id: <安装后生成的行 id>
+#   config:
+#     defaultMode: full
+#
+# 飞书（@aiwayds/dsh-feishu，P1）：也可让 /feishu-onboard 代写这一段
+# - id: <安装后生成的行 id>
+#   config:
+#     operators: []          # 填老板自己的 open_id；或接入后立刻私聊机器人完成配对
+#     backgroundPush: cron   # 定时任务和子代理完成时推送
+#
 # 定时任务（@aiwayds/dsh-cron）按 config/triggers.md 创建，创建方式以插件 README 为准。
