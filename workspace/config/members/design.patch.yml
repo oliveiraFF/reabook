@@ -1,0 +1,12 @@
+# design 成员配置片段（2026-11-18）。这是片段，不是可直接加载的文件。
+# 并入：C:\Users\25370\.dsh\profiles\web\cordis.patch.yml → agent-teams → config.profiles.single.members
+#       （插在 idea 与 reviewer 两行之间，缩进与 idea 行相同）。只并入 single，不并入 chain1。
+# 谁来并：只有 dsh-cron 会话可改 cordis.patch.yml；并之前先备份成 cordis.patch.yml.bak-20261118-design，
+#        并完跑 `dsh web --dump-config` 确认能加载，再重跑已通过的测试（AGENTS.md §12 末段）。
+# 模型：不写 provider/model，沿用 agent-teams 的 memberLlmProvider: deepseek-official / memberModel: deepseek-v4-pro
+#       （与 idea 相同，DeepSeek）；reviewer 仍为 moonshotai-cn / kimi-k3.1-pro，厂商不同，满足 FR-13。
+# 撤销：删除下面这 3 行即可。
+
+          - name: design
+            role: 平面设计说明（无生图工具，只交 design.md）。开工前先读 E:/reabook/workspace/modules/design/ 下
+              persona.md、memory.md、history.md；只写 projects/<任务ID>/design/design.md，不生成也不声称存在图片。
