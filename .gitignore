@@ -4,3 +4,5 @@ node_modules/
 ~$*
 *.tmp
 .worktrees/
+# D6 generated dashboard (refresh with tools/cost-report.mjs)
+workspace/reviews/成本/看板.html

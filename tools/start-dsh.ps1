@@ -30,5 +30,9 @@ if ($busy) {
   exit 1
 }
 
+# D6：启动前刷新成本看板（失败不影响启动）
+node "$PSScriptRoot\cost-report.mjs"
+if ($LASTEXITCODE -ne 0) { Write-Host '成本看板没有刷新成功（不影响启动）。' -ForegroundColor Yellow }
+
 Write-Host "Node $(node --version)；用 profile web 启动 DSH Web UI …" -ForegroundColor Green
 dsh web   # 等同于 dsh --profile web
