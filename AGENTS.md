@@ -132,7 +132,7 @@ Each module, before work: read its `persona.md`, `memory.md`, last 5 lines of `h
 
 | Module | Input | Output | Must not |
 |---|---|---|---|
-| idea | task brief, feeds, asset index | step 1 `idea.md`: goal, 3 directions (concept, why with ≥2 judgment-rule IDs, hook, risk), recommendation, cited IDs, open questions. Step 2 (only after the brief states 「老板已选定方向 X」): append 「## 方向 X 展开」 to the same file | write scripts; decide for the owner; expand any direction before the owner picks one |
+| idea | task brief, feeds, asset index | step 1 `idea.md`: goal, 3 directions (concept, why with ≥2 judgment-rule IDs, hook, risk), recommendation, required 「未确认属性」 table (every product attribute incl. product-name adjectives and captain-drafted specs, every position, conditional wording; added 2026-11-17), cited IDs, open questions. Step 2 (only after the brief states 「老板已选定方向 X」): append 「## 方向 X 展开」 to the same file | write scripts; decide for the owner; expand any direction before the owner picks one |
 | script | `idea.md` (owner-chosen direction) | `script.md`: full voiceover, storyboard table `镜号/时长/画面/口播/素材需求/转场`, total length within ±10% | change direction |
 | asset | `assets/`, `script.md` | `_index.md` rows `素材编号/文件名/类型/时长尺寸/标签/导入日期/来源`; task list per shot | modify/move/delete originals; download from web |
 | edit | `script.md`, asset list | `edit/timeline.md`, `clips/` (copies), `subtitles.srt` or `.txt`, `bgm.md` | fabricate timecodes; export final video; publish |
@@ -251,7 +251,7 @@ Red-line card: `[等待确认] 红线操作：<op>　影响：<what changes, rev
 
 Next steps in order: owner enters keys → read model IDs → write chain1 config (after owner OK) → set session working dir to `E:\reabook\workspace` with `workspace-write` → minimal feeds → tests T3, T7, chain, T16, T13.
 
-Next steps now (2026-11-16): owner final-reviews P005/P006/P007 in DSH → captain writes back (M-01 made specific: product-name adjectives such as 迷你/折叠/旅行 count as unconfirmed; check title, concept, hook and recommendation line by line; update known-pitfalls #1; read after write) → run one more same-category idea task to see whether M-01 still recurs (if yes: add a required 「未确认属性」 table to idea persona §4) → then the deferred knowledge base above.
+Next steps now (2026-11-16): owner final-reviews P005/P006/P007 in DSH → captain writes back (M-01 made specific: product-name adjectives such as 迷你/折叠/旅行 count as unconfirmed; check title, concept, hook and recommendation line by line; update known-pitfalls #1; read after write) → run one more same-category idea task to see whether M-01 still recurs (it recurred again in the P007 direction-B expansion, 5th time, so the required 「未确认属性」 table was added to idea persona §4 and reviewer check 3 on 2026-11-17; next: one new idea step-1 task in a fresh session to see whether the first draft passes check 3) → then the deferred knowledge base above.
 
 ---
 
