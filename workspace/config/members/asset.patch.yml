@@ -1,0 +1,15 @@
+# asset 成员行片段（2026-11-18，asset-D2 会话起草）。这不是可直接加载的补丁文件。
+# 并入位置：C:\Users\25370\.dsh\profiles\web\cordis.patch.yml
+#   → id: agent-teams → config.profiles.single.members 列表末尾（单模块直调「只调 asset」，闭环测试用这个）。
+#   chain1 暂不并入：chain1 目前只到 script；等 edit 接入后再按同一行加进 chain1（asset 与 script 之后的 edit 并行前置）。
+# 只有负责改 cordis.patch.yml 的会话（dsh-cron）或老板本人可以并入；改前备份成
+#   cordis.patch.yml.bak-20261118-asset，改完运行 `dsh web --dump-config` 确认能加载，再重跑已通过的测试（T7）。
+# provider / model 与顶层 memberLlmProvider: deepseek-official、memberModel: deepseek-v4-pro 相同，
+# 写在成员行里只是让 team.json 明确记录（执行模型 DeepSeek ≠ 验收模型 Kimi，FR-13）。
+
+          - name: asset
+            provider: deepseek-official
+            model: deepseek-v4-pro
+            role: 素材索引（原始素材只读）。开工前先读 E:/reabook/workspace/modules/asset/ 下
+              persona.md、memory.md、history.md；只写 assets/_index.md 和 projects/<任务ID>/assets.md；
+              类型与时长/尺寸用 D2（node E:/reabook/tools/media-info.mjs）读，收尾跑 D1；不改、不移动、不删任何原始文件。
