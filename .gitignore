@@ -6,3 +6,6 @@ node_modules/
 .worktrees/
 # D6 generated dashboard (refresh with tools/cost-report.mjs)
 workspace/reviews/成本/看板.html
+# D3/edit test fixture media (local TTS, regenerate per test record)
+workspace/projects/*/_测试夹具/*.mp4
+workspace/projects/*/_测试夹具/*.wav
