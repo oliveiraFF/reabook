@@ -70,6 +70,8 @@ const tmpDir = out ? path.dirname(out) : os.tmpdir();
 fs.mkdirSync(tmpDir, { recursive: true });
 const tmpWav = path.join(tmpDir, `.d3-tmp-${process.pid}.wav`);
 const cleanup = () => { try { fs.unlinkSync(tmpWav); } catch {} };
+// 显式退出会跳过 finally，错误路径由退出事件清理临时 wav。
+process.once('exit', cleanup);
 
 let segs;
 try {
@@ -89,6 +91,7 @@ try {
   if (ps.status !== 0) die(1, `识别失败（退出码 ${ps.status}）：${(ps.stderr || '').trim()}`);
   segs = ps.stdout.split(/\r?\n/).filter(Boolean).map(l => JSON.parse(l));
 } finally {
+  process.off('exit', cleanup);
   cleanup();
 }
 if (!segs.length) die(1, '没有识别到语音，未写字幕（不编造时间码）。');
