@@ -1,0 +1,16 @@
+# edit 成员行片段（2026-11-18，edit-D3 会话起草）。这不是可直接加载的补丁文件。
+# 并入位置：C:\Users\25370\.dsh\profiles\web\cordis.patch.yml
+#   → id: agent-teams → config.profiles.single.members 列表末尾（单模块直调「只调 edit」，闭环测试用这个）。
+#   chain1 暂不并入：chain1 目前只到 script；视频链路后半段（asset、edit）测通后再按同一行加进 chain1，
+#   edit 任务依赖 script 与 asset 两个任务。
+# 只有负责改 cordis.patch.yml 的会话（dsh-cron）或老板本人可以并入；改前备份成
+#   cordis.patch.yml.bak-20261118-edit，改完运行 `dsh web --dump-config` 确认能加载，再重跑已通过的测试（T7）。
+# provider / model 与顶层 memberLlmProvider: deepseek-official、memberModel: deepseek-v4-pro 相同，
+# 写在成员行里只是让 team.json 明确记录（执行模型 DeepSeek ≠ 验收模型 Kimi，FR-13）。
+
+          - name: edit
+            provider: deepseek-official
+            model: deepseek-v4-pro
+            role: 剪辑时间线包（素材只复制不修改，不导出成片、不发布）。开工前先读 E:/reabook/workspace/modules/edit/ 下
+              persona.md、memory.md、history.md；只写 projects/<任务ID>/edit/；素材时长用 D2（node E:/reabook/tools/media-info.mjs），
+              字幕用 D3（node E:/reabook/tools/transcribe.mjs），时间码只照抄 D2/D3 输出，收尾跑 D1。
