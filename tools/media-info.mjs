@@ -9,6 +9,8 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { tmpdir } from 'node:os';
+import { randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 
 const args = process.argv.slice(2);
@@ -64,13 +66,34 @@ const fmtSize = b => (b >= 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.
 const fmtDur = s => `${s.toFixed(1)}s`;
 const fps = r => { const [a, b] = String(r || '').split('/').map(Number); return a && b ? +(a / b).toFixed(2) : null; };
 
+function readProbeOutput(file) {
+  const args = ['-v', 'error', '-show_format', '-show_streams', '-of', 'json', file];
+  const maxBuffer = 16 * 1024 * 1024;
+  try {
+    return execFileSync(ffprobe, args, { encoding: 'utf8', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer });
+  } catch (error) {
+    if (process.platform !== 'win32' || error.code !== 'EPERM') throw error;
+  }
+
+  // Windows 沙箱可能允许启动 ffprobe，但拒绝创建捕获输出的管道。
+  const output = path.join(tmpdir(), `d2-ffprobe-${randomUUID()}.json`);
+  const fd = fs.openSync(output, 'wx');
+  try {
+    execFileSync(ffprobe, args, { windowsHide: true, stdio: ['ignore', fd, 'inherit'] });
+    if (fs.fstatSync(fd).size > maxBuffer) throw new Error('ffprobe 输出超过 16 MiB');
+    return fs.readFileSync(output, 'utf8');
+  } finally {
+    fs.closeSync(fd);
+    fs.unlinkSync(output);
+  }
+}
+
 function probe(f) {
   const size = fs.statSync(f).size;
   const row = { 文件名: shown(f), 类型: '未知', 时长尺寸: '未知', 编码: '未知', 帧率: null, 大小: fmtSize(size), 备注: '' };
   let info;
   try {
-    info = JSON.parse(execFileSync(ffprobe, ['-v', 'error', '-show_format', '-show_streams', '-of', 'json', f],
-      { encoding: 'utf8', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 16 * 1024 * 1024 }));
+    info = JSON.parse(readProbeOutput(f));
   } catch (e) {
     row.备注 = `ffprobe 读不出：${String(e.stderr || e.message).trim().split(/\r?\n/)[0]}`;
     return row;
